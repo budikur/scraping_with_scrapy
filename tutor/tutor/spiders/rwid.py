@@ -47,12 +47,16 @@ class RwidSpider(scrapy.Spider):
         # yield {"title": response.css("title::text").get()}
         image = response.css(".card-img-top").attrib.get("src")
         title = response.css(".card-title::text").get()
+        price = response.css(".card-price::text").get()
         stock = response.css(".card-stock::text").get()
+        category =response.css(".card-category::text").get()
         description = response.css(".card-text::text").get()
 
         return {
             "image": image,
             "title": title,
+            "price": price,
             "stock": stock,
+            "category": category,
             "desc": description
         }
