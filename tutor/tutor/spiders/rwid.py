@@ -1,8 +1,6 @@
 from typing import List
-
 import scrapy
 from cssselect import Selector
-
 
 class RwidSpider(scrapy.Spider):
     name = 'rwid'
@@ -37,8 +35,24 @@ class RwidSpider(scrapy.Spider):
             href = detail.attrib.get("href")
             yield response.follow(href, callback=self.parse_detail)
 
-        yield {"title": response.css("title::text").get()}
+        paginations: List[Selector] = response.css(".pagination a.page-link")
+        for pagination in paginations:
+            href = pagination.attrib.get("href")
+            yield response.follow(href, callback=self.after_login)
+
+        # yield {"title": response.css("title::text").get()}
         # pass
 
-def parse_detail(self, response):
-    yield {"title": response.css("title::text").get()}
+    def parse_detail(self, response):
+        # yield {"title": response.css("title::text").get()}
+        image = response.css(".card-img-top").attrib.get("src")
+        title = response.css(".card-title::text").get()
+        stock = response.css(".card-stock::text").get()
+        description = response.css(".card-text::text").get()
+
+        return {
+            "image": image,
+            "title": title,
+            "stock": stock,
+            "desc": description
+        }
